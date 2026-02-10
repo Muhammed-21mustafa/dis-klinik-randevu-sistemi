@@ -33,7 +33,7 @@ public class ReviewController {
     @PostMapping("/public")
     public ResponseEntity<?> createReview(@Valid @RequestBody Review review) {
         try {
-            Review savedReview = reviewService.createReview(review);
+            reviewService.createReview(review);
             return ResponseEntity.ok("Yorumunuz onay için gönderildi. Teşekkür ederiz!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Yorum gönderilirken hata oluştu: " + e.getMessage());

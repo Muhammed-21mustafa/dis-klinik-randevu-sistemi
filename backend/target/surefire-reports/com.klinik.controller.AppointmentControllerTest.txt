@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.klinik.controller.AppointmentControllerTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.369 s -- in com.klinik.controller.AppointmentControllerTest

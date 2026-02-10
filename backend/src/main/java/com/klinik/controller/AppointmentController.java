@@ -28,8 +28,20 @@ public class AppointmentController {
             Appointment savedAppointment = appointmentService.createAppointment(appointment);
             return ResponseEntity.ok(savedAppointment);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    e.getMessage() != null ? e.getMessage() : "Randevu oluşturulurken beklenmeyen bir hata oluştu");
         }
+    }
+
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationExceptions(
+            org.springframework.web.bind.MethodArgumentNotValidException ex) {
+        StringBuilder errors = new StringBuilder();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String errorMessage = error.getDefaultMessage();
+            errors.append(errorMessage).append("\n");
+        });
+        return ResponseEntity.badRequest().body(errors.toString());
     }
 
     @GetMapping("/public/patient")
@@ -63,18 +75,21 @@ public class AppointmentController {
             @PathVariable Long doctorId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<Appointment> appointments = appointmentService.getDoctorAppointmentsByDateRange(doctorId, startDate, endDate);
+        List<Appointment> appointments = appointmentService.getDoctorAppointmentsByDateRange(doctorId, startDate,
+                endDate);
         return ResponseEntity.ok(appointments);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
-    public ResponseEntity<?> updateAppointment(@PathVariable Long id, @Valid @RequestBody Appointment appointmentDetails) {
+    public ResponseEntity<?> updateAppointment(@PathVariable Long id,
+            @Valid @RequestBody Appointment appointmentDetails) {
         try {
             Appointment updatedAppointment = appointmentService.updateAppointment(id, appointmentDetails);
             return ResponseEntity.ok(updatedAppointment);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(
+                    e.getMessage() != null ? e.getMessage() : "Randevu güncellenirken beklenmeyen bir hata oluştu");
         }
     }
 

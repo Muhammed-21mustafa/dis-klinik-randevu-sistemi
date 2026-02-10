@@ -57,6 +57,10 @@ public class AppointmentService {
     @Transactional
     public Appointment createAppointment(Appointment appointment) {
         // Validate doctor exists
+        if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null) {
+            throw new RuntimeException("Doktor seçimi yapılmalıdır");
+        }
+
         Doctor doctor = doctorRepository.findById(appointment.getDoctor().getId())
                 .orElseThrow(() -> new RuntimeException("Doktor bulunamadı"));
 
@@ -89,8 +93,8 @@ public class AppointmentService {
 
         // Check for conflicts if date/time is being changed
         if (!appointment.getTarih().equals(appointmentDetails.getTarih()) ||
-            !appointment.getSaat().equals(appointmentDetails.getSaat())) {
-            
+                !appointment.getSaat().equals(appointmentDetails.getSaat())) {
+
             if (hasConflict(appointment.getDoctor(), appointmentDetails.getTarih(), appointmentDetails.getSaat())) {
                 throw new RuntimeException("Bu tarih ve saatte zaten bir randevu mevcut");
             }
@@ -131,7 +135,7 @@ public class AppointmentService {
             String[] hours = workingHours.split("-");
             LocalTime startTime = LocalTime.parse(hours[0]);
             LocalTime endTime = LocalTime.parse(hours[1]);
-            
+
             return !appointmentTime.isBefore(startTime) && !appointmentTime.isAfter(endTime);
         } catch (Exception e) {
             return true; // If parsing fails, allow the appointment
@@ -143,17 +147,16 @@ public class AppointmentService {
                 .orElseThrow(() -> new RuntimeException("Doktor bulunamadı: " + doctorId));
 
         List<Appointment> existingAppointments = appointmentRepository.findByTarihAndDoctor(date, doctor);
-        
+
         // Generate available time slots based on working hours
         // This is a simplified implementation - you can enhance it based on your needs
         List<LocalTime> allSlots = List.of(
-            LocalTime.of(9, 0), LocalTime.of(9, 30),
-            LocalTime.of(10, 0), LocalTime.of(10, 30),
-            LocalTime.of(11, 0), LocalTime.of(11, 30),
-            LocalTime.of(14, 0), LocalTime.of(14, 30),
-            LocalTime.of(15, 0), LocalTime.of(15, 30),
-            LocalTime.of(16, 0), LocalTime.of(16, 30)
-        );
+                LocalTime.of(9, 0), LocalTime.of(9, 30),
+                LocalTime.of(10, 0), LocalTime.of(10, 30),
+                LocalTime.of(11, 0), LocalTime.of(11, 30),
+                LocalTime.of(14, 0), LocalTime.of(14, 30),
+                LocalTime.of(15, 0), LocalTime.of(15, 30),
+                LocalTime.of(16, 0), LocalTime.of(16, 30));
 
         return allSlots.stream()
                 .filter(slot -> existingAppointments.stream()

@@ -1,0 +1,17 @@
+:root {
+  --color-primary: #17a2b8;
+  --color-accent: #1fcaa6;
+  --color-bg: #f7fafc;
+  --color-surface: #f3f7fa;
+  --color-muted: #798599;
+  --color-success: #10b981;
+  --color-danger: #f87171;
+  --motion-fast: 120ms;
+  --motion-medium: 200ms;
+  --motion-long: 350ms;
+}
+
+
+
+
+
